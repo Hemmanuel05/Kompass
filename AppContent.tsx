@@ -7,7 +7,11 @@ import FeatureWrapper from './components/shared/FeatureWrapper';
 import Sidebar from './components/Sidebar';
 import MobileHeader from './components/MobileHeader';
 
-const App: React.FC = () => {
+interface AppContentProps {
+  onLogout: () => void;
+}
+
+const AppContent: React.FC<AppContentProps> = ({ onLogout }) => {
   const [activeFeature, setActiveFeature] = useState<Feature | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -22,20 +26,21 @@ const App: React.FC = () => {
   }, [activeFeature]);
 
   return (
-    <div className="min-h-screen lg:flex max-h-screen overflow-hidden">
+    <div className="min-h-screen lg:flex">
       <Sidebar 
         features={FEATURES}
         activeFeature={activeFeature}
         onSelectFeature={handleSelectFeature}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
+        onLogout={onLogout}
       />
       
       {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div 
           onClick={() => setIsSidebarOpen(false)} 
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-20 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 lg:hidden"
           aria-hidden="true"
         ></div>
       )}
@@ -59,4 +64,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AppContent;

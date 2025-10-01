@@ -59,7 +59,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ content }) => {
   });
 
   return (
-    <div className="relative bg-slate-900/50 backdrop-blur-lg border border-slate-700/50 rounded-xl p-6 mt-6 whitespace-pre-wrap font-sans">
+    <div className="relative bg-slate-950/60 backdrop-blur-lg border border-slate-800 rounded-xl p-6 mt-8 whitespace-pre-wrap font-sans shadow-lg shadow-black/30">
       <button
         onClick={handleCopy}
         className="absolute top-3 right-3 flex items-center px-3 py-1 bg-slate-800/70 text-slate-300 text-xs font-semibold rounded-md hover:bg-slate-700/70 transition-colors disabled:cursor-not-allowed"

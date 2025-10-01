@@ -103,14 +103,14 @@ const KaitoProjectHelper: React.FC = () => {
 
     return (
         <div>
-            <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-yellow-300">
+            <div className="bg-blue-950/50 border border-blue-700/50 rounded-lg p-4 mb-6">
+                <p className="text-sm text-blue-300">
                     <strong>Note:</strong> This tool uses our verified list and web search for project info, but can't guarantee everything is 100% current. 
-                    Always verify campaign details at <a href="https://yaps.kaito.ai" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-yellow-100">yaps.kaito.ai</a> before posting.
+                    Always verify campaign details at <a href="https://yaps.kaito.ai" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-blue-100">yaps.kaito.ai</a> before posting.
                 </p>
             </div>
 
-            <div className="bg-slate-900/50 backdrop-blur-lg border border-slate-700/50 rounded-xl p-6 space-y-6">
+            <div className="bg-slate-900/50 backdrop-blur-lg border border-slate-800 rounded-xl p-6 space-y-6">
                 <div className="relative" ref={wrapperRef}>
                     <label htmlFor="projectName" className="block text-sm font-medium text-slate-300 mb-2">what project are you curious about?</label>
                     <input 
@@ -128,7 +128,7 @@ const KaitoProjectHelper: React.FC = () => {
                             }
                         }}
                         placeholder="infinex, monad, etc." 
-                        className="w-full p-3 bg-slate-800/60 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none transition"
+                        className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
                         autoComplete="off"
                     />
                      {isSuggestionsVisible && suggestions.length > 0 && (
@@ -161,15 +161,15 @@ const KaitoProjectHelper: React.FC = () => {
                 </div>
                  <div>
                     <label htmlFor="knownInfo" className="block text-sm font-medium text-slate-300 mb-2">what do you already know about them?</label>
-                    <textarea id="knownInfo" value={knownInfo} onChange={(e) => setKnownInfo(e.target.value)} placeholder="just that they're doing some defi thing..." rows={3} className="w-full p-3 bg-slate-800/60 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none transition"></textarea>
+                    <textarea id="knownInfo" value={knownInfo} onChange={(e) => setKnownInfo(e.target.value)} placeholder="just that they're doing some defi thing..." rows={3} className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"></textarea>
                 </div>
                 <div>
                     <label htmlFor="angle" className="block text-sm font-medium text-slate-300 mb-2">what angle interests you?</label>
-                    <select id="angle" value={angle} onChange={(e) => setAngle(e.target.value)} className="w-full p-3 bg-slate-800/60 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none transition">
-                      {ANGLE_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-slate-900">{opt.label}</option>)}
+                    <select id="angle" value={angle} onChange={(e) => setAngle(e.target.value)} className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]">
+                      {ANGLE_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">{opt.label}</option>)}
                     </select>
                 </div>
-                <button onClick={handleAnalyze} disabled={isButtonDisabled} className="w-full font-bold py-3 px-6 rounded-lg bg-gradient-to-r from-cyan-600 to-purple-600 hover:opacity-90 transition-opacity duration-300 shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button onClick={handleAnalyze} disabled={isButtonDisabled} className="w-full font-bold py-3 px-6 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/40 transform transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100">
                     {isLoading ? 'thinking through this...' : 'help me think through this'}
                 </button>
             </div>

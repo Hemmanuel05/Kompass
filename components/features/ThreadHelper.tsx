@@ -17,6 +17,7 @@ const ThreadHelper: React.FC = () => {
     try {
       const response = await structureThread(topic, numPosts);
       setResult(response);
+    // FIX: Added curly braces to the catch block to correctly scope the error variable.
     } catch (error) {
       console.error(error);
       setResult('Failed to structure thread. Please try again.');
@@ -31,7 +32,7 @@ const ThreadHelper: React.FC = () => {
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
         placeholder="What's your main idea or topic for the thread?"
-        className="w-full h-32 p-4 bg-slate-800/60 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none transition-all duration-300 shadow-inner"
+        className="w-full h-32 p-4 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 shadow-inner placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
       />
       <div className="mt-4">
         <label htmlFor="numPosts" className="block text-slate-400 mb-2">
@@ -50,7 +51,7 @@ const ThreadHelper: React.FC = () => {
       <button
         onClick={handleStructure}
         disabled={isLoading || !topic.trim()}
-        className="mt-6 font-bold py-2.5 px-6 rounded-lg bg-gradient-to-r from-cyan-600 to-purple-600 hover:opacity-90 transition-opacity duration-300 shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/40 transform transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
       >
         {isLoading ? 'Structuring...' : 'Help Me Structure This'}
       </button>

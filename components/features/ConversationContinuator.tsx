@@ -30,12 +30,12 @@ const ConversationContinuator: React.FC = () => {
         value={conversationHistory}
         onChange={(e) => setConversationHistory(e.target.value)}
         placeholder="Paste the conversation history here. Start with the oldest message and end with the most recent."
-        className="w-full h-64 p-4 bg-slate-800/60 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none transition-all duration-300 shadow-inner"
+        className="w-full h-64 p-4 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 shadow-inner placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
       />
       <button
         onClick={handleGenerate}
         disabled={isLoading || !conversationHistory.trim()}
-        className="mt-6 font-bold py-2.5 px-6 rounded-lg bg-gradient-to-r from-cyan-600 to-purple-600 hover:opacity-90 transition-opacity duration-300 shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/40 transform transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
       >
         {isLoading ? 'Thinking...' : 'Suggest Follow-up Replies'}
       </button>

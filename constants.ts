@@ -11,6 +11,7 @@ import KaitoProjectHelper from './components/features/KaitoProjectHelper';
 import CryptoMarketCommentary from './components/features/CryptoMarketCommentary';
 import ImpressionFarmer from './components/features/ImpressionFarmer';
 import InspiredOriginalGenerator from './components/features/InspiredOriginalGenerator';
+import ProjectDataFetcher from './components/features/ProjectDataFetcher';
 
 import MessageCircleIcon from './components/icons/MessageCircleIcon';
 import ListIcon from './components/icons/ListIcon';
@@ -24,6 +25,7 @@ import TrendingUpIcon from './components/icons/TrendingUpIcon';
 import FileTextIcon from './components/icons/FileTextIcon';
 import FlameIcon from './components/icons/FlameIcon';
 import ShuffleIcon from './components/icons/ShuffleIcon';
+import DatabaseIcon from './components/icons/DatabaseIcon';
 
 
 export const FEATURES: FeatureConfig[] = [
@@ -89,6 +91,13 @@ export const FEATURES: FeatureConfig[] = [
     description: "Organize your thoughts about crypto projects and find interesting angles to write about. Definitely not promising you'll get rich or famous, just makes the research and writing process a bit easier.",
     icon: TrendingUpIcon,
     component: KaitoProjectHelper,
+  },
+  {
+    id: Feature.ProjectDataFetcher,
+    title: 'Live Project Fetcher',
+    description: 'Use an AI agent to fetch a fresh list of active projects and campaigns directly from the Kaito leaderboards.',
+    icon: DatabaseIcon,
+    component: ProjectDataFetcher,
   },
   {
     id: Feature.CryptoMarketCommentary,

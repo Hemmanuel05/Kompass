@@ -37,14 +37,14 @@ const ProjectDataFetcher: React.FC = () => {
 
   return (
     <div>
-       <div className="bg-slate-900/50 backdrop-blur-lg border border-slate-700/50 rounded-xl p-6 text-center">
+       <div className="bg-slate-900/50 backdrop-blur-lg border border-slate-800 rounded-xl p-6 text-center">
             <p className="text-slate-400 mb-4">
                 Click the button below to use an AI agent to fetch a fresh list of projects directly from the Kaito yapper leaderboards.
             </p>
             <button
                 onClick={handleFetch}
                 disabled={isLoading}
-                className="font-bold py-2.5 px-6 rounded-lg bg-gradient-to-r from-cyan-600 to-purple-600 hover:opacity-90 transition-opacity duration-300 shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/40 transform transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
             >
                 {isLoading ? 'Fetching Projects...' : 'Fetch Live Project List'}
             </button>

@@ -13,6 +13,7 @@ export enum Feature {
   CryptoMarketCommentary = 'CryptoMarketCommentary',
   ImpressionFarmer = 'ImpressionFarmer',
   InspiredOriginal = 'InspiredOriginal',
+  ProjectDataFetcher = 'ProjectDataFetcher',
 }
 
 export interface FeatureConfig {
