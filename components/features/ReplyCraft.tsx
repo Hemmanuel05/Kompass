@@ -1,77 +1,67 @@
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { craftReply } from '../../services/geminiService';
 import Loader from '../Loader';
 import ResultDisplay from '../ResultDisplay';
 import UploadIcon from '../icons/UploadIcon';
 import XCircleIcon from '../icons/XCircleIcon';
 
-
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
+const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const result = reader.result as string;
-      const base64 = result.split(',')[1];
-      resolve(base64);
+      const result = (reader.result as string).split(',')[1];
+      if (result) {
+        resolve(result);
+      } else {
+        reject(new Error("Failed to read file as base64."));
+      }
     };
     reader.onerror = (error) => reject(error);
   });
-};
+
 
 const ReplyCraft: React.FC = () => {
-  const [originalPost, setOriginalPost] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [postText, setPostText] = useState('');
+  const [image, setImage] = useState<{ file: File, preview: string, base64: string, mimeType: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    return () => {
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      try {
+        const base64 = await fileToBase64(file);
+        setImage({
+          file,
+          preview: URL.createObjectURL(file),
+          base64,
+          mimeType: file.type
+        });
+      } catch (error) {
+        console.error("Error converting file to base64:", error);
       }
-    };
-  }, [imagePreview]);
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
-    }
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImageFile(null);
-      setImagePreview(null);
     }
   };
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    if(fileInputRef.current) {
-        fileInputRef.current.value = "";
+  const removeImage = () => {
+    if (image) {
+      URL.revokeObjectURL(image.preview);
+      setImage(null);
     }
   };
-  
+
   const handleSuggest = useCallback(async () => {
-    if (!originalPost.trim()) return;
+    if (!postText.trim()) return;
+    
     setIsLoading(true);
     setResult('');
     try {
-        let image: { mimeType: string; data: string } | undefined = undefined;
-        if (imageFile) {
-            const base64Data = await fileToBase64(imageFile);
-            image = {
-                mimeType: imageFile.type,
-                data: base64Data,
-            };
-        }
-      const response = await craftReply({ originalPost, image });
+      const response = await craftReply({ 
+        postText,
+        image: image ? { data: image.base64, mimeType: image.mimeType } : undefined
+      });
       setResult(response);
     } catch (error) {
       console.error(error);
@@ -79,50 +69,43 @@ const ReplyCraft: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [originalPost, imageFile]);
+  }, [postText, image]);
 
   return (
     <div>
-      <div className="space-y-4">
-        <textarea
-          value={originalPost}
-          onChange={(e) => setOriginalPost(e.target.value)}
-          placeholder="Paste the original post you're replying to..."
-          className="w-full h-32 p-4 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 shadow-inner placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
-        />
-        
-        {imagePreview ? (
-            <div className="relative w-full max-w-sm animate-fade-in">
-                <img src={imagePreview} alt="Image preview" className="rounded-lg object-cover w-full h-auto max-h-64 border border-slate-600" />
-                <button 
-                    onClick={handleRemoveImage}
-                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/80 transition-colors"
-                    aria-label="Remove image"
-                >
-                    <XCircleIcon className="w-6 h-6" />
-                </button>
-            </div>
-        ) : (
-             <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full flex justify-center items-center space-x-2 px-4 py-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
-             >
-                <UploadIcon className="w-5 h-5" />
-                <span>Add Image (Optional)</span>
+      <textarea
+        value={postText}
+        onChange={(e) => setPostText(e.target.value)}
+        placeholder="Paste the original post text here..."
+        className="w-full h-32 p-4 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 shadow-inner placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
+      />
+
+      <div className="mt-4">
+        {image ? (
+          <div className="relative inline-block">
+            <img src={image.preview} alt="Post preview" className="h-24 w-auto rounded-lg border border-slate-700" />
+            <button
+              onClick={removeImage}
+              className="absolute -top-2 -right-2 bg-slate-800 rounded-full text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+              aria-label="Remove image"
+            >
+              <XCircleIcon className="w-6 h-6" />
             </button>
+          </div>
+        ) : (
+          <div>
+            <label htmlFor="image-upload" className="inline-flex items-center px-4 py-2 border border-slate-700 text-sm font-medium rounded-md text-slate-400 bg-slate-900/70 hover:bg-slate-800 cursor-pointer transition-colors">
+              <UploadIcon className="w-5 h-5 mr-2" />
+              Upload Image (Optional)
+            </label>
+            <input id="image-upload" type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+          </div>
         )}
-        <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-            accept="image/png, image/jpeg, image/gif, image/webp"
-            className="hidden"
-        />
       </div>
 
       <button
         onClick={handleSuggest}
-        disabled={isLoading || !originalPost.trim()}
+        disabled={isLoading || !postText.trim()}
         className="mt-6 font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/40 transform transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
       >
         {isLoading ? 'Suggesting...' : 'Suggest Replies'}

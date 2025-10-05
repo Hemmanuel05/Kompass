@@ -5,26 +5,26 @@ import Loader from '../Loader';
 import ResultDisplay from '../ResultDisplay';
 
 const PostReflection: React.FC = () => {
-  const [publishedPost, setPublishedPost] = useState('');
+  const [postText, setPostText] = useState('');
   const [likes, setLikes] = useState('');
   const [retweets, setRetweets] = useState('');
   const [replies, setReplies] = useState('');
   const [impressions, setImpressions] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
 
   const handleReflect = useCallback(async () => {
-    if (!publishedPost.trim()) return;
     setIsLoading(true);
     setResult('');
     try {
-      const engagementData = {
-        likes: likes || '0',
-        retweets: retweets || '0',
-        replies: replies || '0',
-        impressions: impressions || '0',
-      };
-      const response = await reflectOnPost(publishedPost, engagementData);
+      const response = await reflectOnPost({
+        postText,
+        likes: Number(likes) || 0,
+        retweets: Number(retweets) || 0,
+        replies: Number(replies) || 0,
+        impressions: Number(impressions) || 0,
+      });
       setResult(response);
     } catch (error) {
       console.error(error);
@@ -32,37 +32,74 @@ const PostReflection: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [publishedPost, likes, retweets, replies, impressions]);
+  }, [postText, likes, retweets, replies, impressions]);
+
+  const isButtonDisabled = isLoading || (!postText.trim() && !impressions.trim());
 
   return (
     <div>
-      <textarea
-        value={publishedPost}
-        onChange={(e) => setPublishedPost(e.target.value)}
-        placeholder="Paste your published post here..."
-        className="w-full h-32 p-4 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 shadow-inner placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
-      />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+      <div className="bg-slate-900/50 backdrop-blur-lg border border-slate-800 rounded-xl p-6 space-y-6">
         <div>
-            <label htmlFor="likes" className="block text-sm font-medium text-slate-400 mb-1">Likes</label>
-            <input type="number" id="likes" value={likes} onChange={(e) => setLikes(e.target.value)} placeholder="e.g., 120" className="w-full p-2 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]" />
+          <label htmlFor="postText" className="block text-sm font-medium text-slate-300 mb-2">Post Text (Optional)</label>
+          <textarea
+            id="postText"
+            value={postText}
+            onChange={(e) => setPostText(e.target.value)}
+            placeholder="Paste the text of your post here..."
+            className="w-full h-28 p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 shadow-inner placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
+          />
         </div>
-        <div>
-            <label htmlFor="retweets" className="block text-sm font-medium text-slate-400 mb-1">Retweets</label>
-            <input type="number" id="retweets" value={retweets} onChange={(e) => setRetweets(e.target.value)} placeholder="e.g., 30" className="w-full p-2 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]" />
-        </div>
-        <div>
-            <label htmlFor="replies" className="block text-sm font-medium text-slate-400 mb-1">Replies</label>
-            <input type="number" id="replies" value={replies} onChange={(e) => setReplies(e.target.value)} placeholder="e.g., 15" className="w-full p-2 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]" />
-        </div>
-        <div>
-            <label htmlFor="impressions" className="block text-sm font-medium text-slate-400 mb-1">Impressions</label>
-            <input type="number" id="impressions" value={impressions} onChange={(e) => setImpressions(e.target.value)} placeholder="e.g., 5000" className="w-full p-2 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label htmlFor="impressions" className="block text-sm font-medium text-slate-300 mb-2">Impressions</label>
+            <input
+              id="impressions"
+              type="number"
+              value={impressions}
+              onChange={(e) => setImpressions(e.target.value)}
+              placeholder="e.g., 15000"
+              className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
+            />
+          </div>
+          <div>
+            <label htmlFor="likes" className="block text-sm font-medium text-slate-300 mb-2">Likes</label>
+            <input
+              id="likes"
+              type="number"
+              value={likes}
+              onChange={(e) => setLikes(e.target.value)}
+              placeholder="e.g., 350"
+              className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
+            />
+          </div>
+          <div>
+            <label htmlFor="retweets" className="block text-sm font-medium text-slate-300 mb-2">Retweets</label>
+            <input
+              id="retweets"
+              type="number"
+              value={retweets}
+              onChange={(e) => setRetweets(e.target.value)}
+              placeholder="e.g., 45"
+              className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
+            />
+          </div>
+          <div>
+            <label htmlFor="replies" className="block text-sm font-medium text-slate-300 mb-2">Replies</label>
+            <input
+              id="replies"
+              type="number"
+              value={replies}
+              onChange={(e) => setReplies(e.target.value)}
+              placeholder="e.g., 15"
+              className="w-full p-3 bg-slate-900/70 border border-slate-700 rounded-lg focus:ring-2 focus:ring-cyan-500/80 focus:border-cyan-500 outline-none transition-all duration-300 placeholder-slate-500 text-slate-200 focus:shadow-[0_0_15px_#06b6d440]"
+            />
+          </div>
         </div>
       </div>
+      
       <button
         onClick={handleReflect}
-        disabled={isLoading || !publishedPost.trim()}
+        disabled={isButtonDisabled}
         className="mt-6 font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/40 transform transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
       >
         {isLoading ? 'Analyzing...' : 'Analyze Performance'}

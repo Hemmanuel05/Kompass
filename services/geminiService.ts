@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { findProjectByName } from '../data/kaito-projects';
 
@@ -275,12 +276,16 @@ Focus on making each post individually valuable while building a cohesive narrat
 };
 
 export const craftReply = async (data: {
-    originalPost: string;
+    postText: string;
     image?: { mimeType: string; data: string };
 }) => {
-    const { originalPost, image } = data;
-    const textPrompt = `# ROLE: CRYPTO DEGEN REPLY GUY
-You are a crypto native. You live on-chain. You spend 12 hours a day on X. You sound like a real degen, not a corporate VC or a bot. Your goal is to craft 4 authentic replies that a real human would post to earn Kaito Yaps.
+    const { postText, image } = data;
+    const prompt = `# ROLE: CRYPTO DEGEN REPLY GUY
+You are a crypto native who lives on-chain and spends 12 hours a day on X. Your goal is to craft 4 authentic replies that a real human would post to earn Kaito Yaps. You will be given the text of an X post, and potentially an accompanying image.
+
+## YOUR TASK
+1.  **Analyze the Post:** Read the post text. If an image is provided, analyze its content and how it relates to the text. Understand the overall context and tone.
+2.  **Craft 4 Replies:** Generate four distinct replies based on your analysis, following the rules below.
 
 ## DEGEN VOCABULARY - USE THIS, AVOID CORPORATE SLOP
 
@@ -297,8 +302,8 @@ You are a crypto native. You live on-chain. You spend 12 hours a day on X. You s
 ## CRITICAL RULES - NO EXCEPTIONS
 
 - **MATCH THE ENERGY:** Read their post. If it's a shitpost, shitpost back. If it's technical, ask a technical question.
-- **SOUND LIKE A TEXT:** Use contractions. Use slang. Be casual. 1-2 sentences MAX.
-- **SPECIFICITY WINS YAPS:** Don't ask "why?". Ask "why did they choose a 24hr TWAP for the oracle instead of something faster?". React to specific numbers, phrases, or ideas in their post.
+- **SOUND LIKE A TEXT:** Use contractions. Use slang. 1-2 sentences MAX.
+- **SPECIFICITY WINS YAPS:** React to specific numbers, phrases, images, or ideas in their post. Your analysis of the URL content is crucial here.
 - **NO AI SLOP:** Never use the banned phrases. Your output must be indistinguishable from a real human who is deep in the crypto space.
 
 ## 4 DEGEN REPLY TYPES (ROTATE THESE)
@@ -336,31 +341,28 @@ Read your replies. Do they sound like a real degen on X, or a LinkedIn marketing
 
 ---
 
-**POST TO REPLY TO:**
-${originalPost}
-${image ? 'The post also includes an image. Reference it if it is relevant.' : ''}
+**POST TEXT TO ANALYZE AND REPLY TO:**
+${postText}
 
 **GENERATE 4 REPLIES:**
 `;
+    const parts: any[] = [];
+    if (image) {
+        parts.push({
+            inlineData: {
+                mimeType: image.mimeType,
+                data: image.data,
+            },
+        });
+    }
+    parts.push({ text: prompt });
 
     try {
-        if (image) {
-            const imagePart = {
-                inlineData: {
-                    mimeType: image.mimeType,
-                    data: image.data,
-                },
-            };
-            const textPart = { text: textPrompt };
-
-            const response = await ai.models.generateContent({
-                model,
-                contents: { parts: [textPart, imagePart] },
-            });
-            return response.text;
-        } else {
-            return await callGemini(textPrompt);
-        }
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: { parts },
+        });
+        return response.text;
     } catch (error) {
         console.error("Error calling Gemini API:", error);
         return "An error occurred while processing your request. Please check the console for details.";
@@ -460,21 +462,26 @@ For each idea:
     return callGemini(prompt);
 };
 
-export const reflectOnPost = (publishedPost: string, engagementData: { likes: string; retweets: string; replies: string; impressions: string; }) => {
+export const reflectOnPost = (data: {
+    postText: string;
+    likes: number;
+    retweets: number;
+    replies: number;
+    impressions: number;
+}) => {
+    const { postText, likes, retweets, replies, impressions } = data;
     const prompt = `
 # Performance Analyzer
 
 ## Your Role
 Help someone understand their post performance through the lens of X's algorithm.
 
-## Published Post:
-${publishedPost}
-
-## Performance Data:
-- Likes: ${engagementData.likes}
-- Retweets: ${engagementData.retweets}
-- Replies: ${engagementData.replies}
-- Impressions: ${engagementData.impressions}
+## Published Post & Engagement Data:
+- **Post Text:** ${postText || '(No text provided)'}
+- **Likes:** ${likes}
+- **Retweets:** ${retweets}
+- **Replies:** ${replies}
+- **Impressions:** ${impressions}
 
 ## Algorithm Based Analysis:
 
@@ -499,6 +506,7 @@ Focus on understanding which algorithm factors worked in your favor.
 `;
     return callGemini(prompt);
 };
+
 
 export const findRelevantConversations = (interests: string) => {
     const prompt = `

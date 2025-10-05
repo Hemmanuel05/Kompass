@@ -46,7 +46,7 @@ export const FEATURES: FeatureConfig[] = [
   {
     id: Feature.ReplyCraft,
     title: 'Natural Reply Helper',
-    description: "Get short, human sounding reply ideas for crypto Twitter, with support for image context.",
+    description: "Stuck on how to reply? Paste the original post, add an image if there is one, and get some natural-sounding ideas.",
     icon: ReplyIcon,
     component: ReplyCraft,
   },
@@ -67,7 +67,7 @@ export const FEATURES: FeatureConfig[] = [
   {
     id: Feature.PostReflection,
     title: 'Performance Analyzer',
-    description: "Analyze post performance using algorithm weights for likes, retweets, and replies",
+    description: "Manually enter your post's performance metrics to get an analysis based on algorithm weights for likes, retweets, and replies.",
     icon: BarChartIcon,
     component: PostReflection,
   },

@@ -21,5 +21,5 @@ export interface FeatureConfig {
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
-  component: React.ComponentType;
+  component: React.ComponentType<any>;
 }

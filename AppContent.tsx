@@ -1,11 +1,10 @@
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Feature } from './types';
 import { FEATURES } from './constants';
 import Dashboard from './components/Dashboard';
 import FeatureWrapper from './components/shared/FeatureWrapper';
-import Sidebar from './components/Sidebar';
-import MobileHeader from './components/MobileHeader';
+import LogOutIcon from './components/icons/LogOutIcon';
+import { getCurrentUser } from './services/authService';
 
 interface AppContentProps {
   onLogout: () => void;
@@ -13,53 +12,62 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ onLogout }) => {
   const [activeFeature, setActiveFeature] = useState<Feature | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const user = getCurrentUser();
 
   const handleSelectFeature = (featureId: Feature | null) => {
     setActiveFeature(featureId);
-    setIsSidebarOpen(false); // Close sidebar on selection
   };
+
+  useEffect(() => {
+    // Scroll to top when feature changes
+    window.scrollTo(0, 0);
+  }, [activeFeature]);
 
   const activeFeatureConfig = useMemo(() => {
     if (!activeFeature) return null;
     return FEATURES.find(f => f.id === activeFeature);
   }, [activeFeature]);
 
-  return (
-    <div className="min-h-screen lg:flex">
-      <Sidebar 
-        features={FEATURES}
-        activeFeature={activeFeature}
-        onSelectFeature={handleSelectFeature}
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-        onLogout={onLogout}
-      />
-      
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div 
-          onClick={() => setIsSidebarOpen(false)} 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 lg:hidden"
-          aria-hidden="true"
-        ></div>
-      )}
+  const ActiveComponent = activeFeatureConfig?.component;
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <MobileHeader onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto pt-20 lg:pt-8">
-          {!activeFeatureConfig ? (
-            <Dashboard features={FEATURES} onSelectFeature={handleSelectFeature} />
-          ) : (
-            <FeatureWrapper 
-              title={activeFeatureConfig.title}
-              description={activeFeatureConfig.description}
+  return (
+    <div className="min-h-screen">
+      <header className="relative py-8 px-4 sm:px-6 lg:px-8">
+        <div
+          className="text-center cursor-pointer group"
+          onClick={() => handleSelectFeature(null)}
+          aria-label="Go to dashboard"
+        >
+          <h1 className="text-3xl md:text-4xl font-extrabold transition-transform group-hover:scale-105 inline-block">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Kaito Kompass
+            </span>
+          </h1>
+        </div>
+        <div className="absolute top-0 right-4 sm:right-6 lg:right-8 h-full flex items-center">
+            <button 
+                onClick={onLogout} 
+                className="flex items-center space-x-2 text-slate-400 hover:text-cyan-400 transition-colors"
+                aria-label="Logout"
             >
-              <activeFeatureConfig.component />
-            </FeatureWrapper>
-          )}
-        </main>
-      </div>
+                <LogOutIcon className="w-5 h-5" />
+                <span className="text-sm font-medium hidden sm:inline">Logout</span>
+            </button>
+        </div>
+      </header>
+      <main className="px-4 sm:px-6 lg:px-8 pb-8">
+        {!activeFeatureConfig || !ActiveComponent ? (
+          <Dashboard features={FEATURES} onSelectFeature={handleSelectFeature} />
+        ) : (
+          <FeatureWrapper
+            title={activeFeatureConfig.title}
+            description={activeFeatureConfig.description}
+            onBack={() => handleSelectFeature(null)}
+          >
+            <ActiveComponent user={user} />
+          </FeatureWrapper>
+        )}
+      </main>
     </div>
   );
 };
